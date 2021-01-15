@@ -1,0 +1,27 @@
+---
+title: "grudge_expl"
+author: "Joseph"
+date: "1/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+
+library(tidyverse) # for data munging
+library(knitr) 
+library(rstatix)
+library(ggpubr)
+library(lme4)
+library(lmerTest)
+library(MASS) #for regression. #masks select from rstatix and dplyr...so specify using dplyr::select
+library(hablar) #you need this for batch-converting to numeric
+library(dae)
+library(ordinal) #for clmm regression
+
+d <- read_csv("agendata.csv")
+```
+
+.
