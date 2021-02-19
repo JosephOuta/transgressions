@@ -1,0 +1,406 @@
+---
+title: "MFD analysis"
+author: "Joseph"
+date: "2/10/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(hablar)
+
+grudata <- read_csv("data/transdata.csv")
+#q1 
+df.desc1a_mfd_norm <- read_csv("post_norm/q1_words/desc_1a_mfd_norm.csv")
+df.desc1b_mfd_norm <- read_csv("post_norm/q1_words/desc_1b_mfd_norm.csv")
+df.desc1c_mfd_norm <- read_csv("post_norm/q1_words/desc_1c_mfd_norm.csv")
+df.desc1d_mfd_norm <- read_csv("post_norm/q1_words/desc_1d_mfd_norm.csv")
+df.desc1e_mfd_norm <- read_csv("post_norm/q1_words/desc_1e_mfd_norm.csv")
+#q2
+df.descapp_mfd_norm <- read_csv("post_norm/q2_app/desc_app_mfd_norm.csv")
+df.descinapp_mfd_norm <- read_csv("post_norm/q2_app/desc_inapp_mfd_norm.csv")
+
+#q3
+df.desc3_mfd_norm <- read_csv("post_norm/q3_rsn/desc_rsn_mfd_norm.csv")
+#q4
+df.emtn1a_mfd_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1a_mfd_norm.csv")
+df.emtn1b_mfd_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1b_mfd_norm.csv")
+df.emtn1c_mfd_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1c_mfd_norm.csv")
+df.emtn1d_mfd_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1d_mfd_norm.csv")
+df.emtn1e_mfd_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1e_mfd_norm.csv")
+#q5
+df.crmst_mfd_norm <- read_csv("post_norm/q5_crmst/desc_crmst_mfd_norm.csv")
+
+```
+
+# Data cleaning
+
+```{r}
+grudata <- grudata %>%
+  slice(-1, -2) %>% #remove first and second row (irrelevant column titles)
+  dplyr::filter(Status==0) %>% #remove survey previews
+  dplyr::filter(Finished==1) %>% #remove unfinished responses
+  retype() #guesses the right data type then auto-converts
+
+names(grudata)
+
+```
+
+# Define functions
+
+Create functions to avoid repetition
+
+```{r}
+#Q1 AND Q4 FUNCTIONS ========================# 
+# data wrangling function #
+wrangle_norm_df <- function (df) {
+  df %>% 
+  dplyr::select(-Filename) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "category",
+               values_to = "response") %>%
+  dplyr::filter(!category %in% c("Segment", "Dic"))
+}
+
+# table wrangling function#
+wrangle_14_table <- function (df) {
+  df %>% 
+  group_by(category) %>% 
+  dplyr::summarize(mean_mentions = mean(mentions)) %>% 
+  dplyr::arrange(desc(mean_mentions)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+}
+
+# nth plotting function #
+plot_nth <- function (df) {
+  df %>% 
+    separate(category, c("Number", "category"), "                    ") %>% #Spacing = 10 tabs!!
+    ggplot(aes(x = position, y = mentions, group = category, color = category)) +
+    geom_point() +
+    labs(x = "nth response",
+         y = "percent mentions",
+         title = "Percent mentions in MFD dictionary categories") 
+}
+
+# mean plotting function #
+plot_mean_mentions <- function (df) {
+  df %>% 
+  separate(category, c("Number", "category"), "                    ") %>% #Spacing = 10 tabs!!
+  group_by(category) %>% 
+  dplyr::summarize(mean_mentions = mean(mentions)) %>% 
+  dplyr::arrange(desc(mean_mentions)) %>% 
+  ggplot(aes(x = reorder(category, mean_mentions), y = mean_mentions, group = category, fill = category)) +
+  geom_bar(stat = "identity") +
+  labs(y = "mean mentions (percent)",
+       title = "Q4 Percent mean mentions in MFD dictionary categories") +
+  coord_flip() +
+  theme(legend.position = "none")
+ 
+}
+
+# data wrangling function for combined #
+wrangle_14_df <- function (df) {
+  df %>% 
+  separate(category, c("Number", "category"), "                    ") %>% #Spacing = 10 tabs!!
+  group_by(category) %>% 
+  dplyr::summarize(mentions = mean(mentions)) %>% 
+  dplyr::arrange(desc(mentions)) 
+}
+
+#Q2, Q3 AND Q5 FUNCTIONS ========================# 
+# table wrangling function #
+wrangle_235_table <- function (df) {
+  df %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("percent" = response) %>% 
+  tibble::as_tibble() %>% 
+  dplyr::arrange(desc(percent)) %>% 
+  rmarkdown::paged_table()
+}
+
+# plotting function #
+plot_235 <- function (df) {
+  df %>% 
+    wrangle_norm_df() %>% 
+    dplyr::rename("mentions" = response) %>% 
+    # dplyr::filter(!category %in% c("Segment", "Dic")) %>% 
+    separate(category, c("Number", "category"), "                    ") %>% #Spacing = 10 tabs!!
+    dplyr::arrange(desc(mentions)) %>% 
+    ggplot(aes(x = category, y = mentions, group = category, fill = category)) +
+    geom_bar(stat = "identity") +
+    labs(y = "mentions (percent)",
+         title = "Percent mean mentions in MFD dictionary categories") +
+    coord_flip() +
+    theme(legend.position = "none")  
+}
+
+#data wrangling function for combined #
+wrangle_235_df <- function (df) {
+  df %>% 
+  dplyr::select(-Filename) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "category",
+               values_to = "mentions") %>%
+  dplyr::filter(!category %in% c("Segment", "Dic")) %>% 
+  separate(category, c("Number", "category"), "                    ") %>% #Spacing = 10 tabs!!
+  dplyr::arrange(desc(mentions)) %>% 
+  dplyr::select(-Number)
+}
+
+```
+
+
+# Q1 Analysis
+
+List some (5) words that come to mind when you think of holding a grudge
+
+```{r}
+#preview  rows
+grudata %>%
+  dplyr::select("desc_wrds_1", "desc_wrds_2", "desc_wrds_3", "desc_wrds_4", "desc_wrds_5") %>% 
+  print(10) 
+
+head(grudata)
+
+# wrangle  #
+df.desc1a_mfd_norm  <- df.desc1a_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_1" = response)
+
+df.desc1b_mfd_norm <- df.desc1b_mfd_norm%>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_2" = response)
+
+df.desc1c_mfd_norm <- df.desc1c_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_3" = response)
+
+df.desc1d_mfd_norm <- df.desc1d_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_4" = response)
+
+df.desc1e_mfd_norm <- df.desc1e_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_5" = response)
+
+# Join # 
+df.desc_1_mfd_all <- plyr::join_all(list(df.desc1a_mfd_norm, df.desc1b_mfd_norm ,
+                                         df.desc1c_mfd_norm , df.desc1d_mfd_norm, df.desc1e_mfd_norm), 
+                                    by='category', 
+                                    type='left') %>% 
+  # filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -category,
+               names_to = "position",
+               values_to = "mentions")
+
+#Table showing mean mentions in most prominent categories # 
+df.desc_1_mfd_all %>% 
+  wrangle_14_table()
+
+#plot nth #
+df.desc_1_mfd_all %>% 
+  plot_nth() +
+  labs(title = "Q1 Percent mentions in MFD dictionary categories")
+
+#plot mean mentions #
+df.desc_1_mfd_all %>% 
+  plot_mean_mentions() +
+  labs(title = "Q1 Percent mean mentions in MFD dictionary categories")
+
+```
+
+
+# Q2a Analysis
+
+Describe a circumstance where you think its right to hold a grudge
+
+```{r}
+# preview data #
+grudata %>%
+  select(starts_with("desc_app")) %>% 
+  print(10)
+
+# table showing most prominent categories #
+df.descapp_mfd_norm %>%
+  wrangle_235_table()
+
+#plot mean mentions #
+df.descapp_mfd_norm %>% 
+  plot_235() +
+  labs(title = "Q2a Percent mean mentions in MFD dictionary categories")
+
+```
+
+# Q2b Analysis
+
+Describe a circumstance where you think its wrong to hold a grudge
+
+```{r}
+# preview data 
+grudata %>%
+  select(starts_with("desc_inapp")) %>% 
+  print(10)
+
+# table showing most prominent categories
+df.descinapp_mfd_norm %>%
+  wrangle_235_table()
+
+# plot mean mentions
+df.descinapp_mfd_norm %>% 
+  plot_235() +
+  labs(title = "Q2b Percent mean mentions in MFD dictionary categories")
+
+```
+
+
+# Q3 Analysis
+
+For what reason do people typically hold grudges? 
+
+```{r}
+# preview data 
+grudata %>%
+  select(starts_with("desc_rsn")) %>% 
+  print(10)
+
+# table showing most prominent categories
+df.desc3_mfd_norm %>% 
+  wrangle_235_table()
+
+# plot mean mentions
+df.desc3_mfd_norm %>% 
+  plot_235() +
+  labs(title = "Q3 Percent mentions in MFD dictionary categories")
+
+```
+
+# Q4 Analysis 
+
+List some (5) emotions you think people feel when they hold a grudge
+
+(Also use emotion category dictionary)
+
+```{r}
+#wrangle ============= #
+df.emtn1a_mfd_norm <- df.emtn1a_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_1" = response)
+
+df.emtn1b_mfd_norm <- df.emtn1b_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_2" = response)
+
+df.emtn1c_mfd_norm <- df.emtn1c_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_3" = response)
+
+df.emtn1d_mfd_norm <- df.emtn1d_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_4" = response)
+
+df.emtn1e_mfd_norm <- df.emtn1e_mfd_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_5" = response)
+
+# Join ========================== # 
+df.emtn_mfd_all <- plyr::join_all(list(df.emtn1a_mfd_norm, df.emtn1b_mfd_norm,
+                                       df.emtn1c_mfd_norm, df.emtn1d_mfd_norm, df.emtn1e_mfd_norm), 
+                                  by='category', 
+                                  type='left') %>% 
+  # filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -category,
+               names_to = "position",
+               values_to = "mentions") 
+
+#table showing mean mentions in most prominent categories ================# 
+df.emtn_mfd_all %>% 
+  wrangle_14_table()
+
+#plot nth response ============ #
+df.emtn_mfd_all %>%
+  plot_nth() +
+  labs(title = "Q4 Percent mentions in MFD dictionary categories")
+
+#plot mean mentions ======#
+df.emtn_mfd_all %>% 
+  plot_mean_mentions() +
+  labs(title = "Q4 Percent mean mentions in MFD dictionary categories")
+
+```
+
+# Q5 Analysis
+
+Describe a circumstance where you have held a grudge (sentences)
+
+```{r}
+#preview data =============#
+grudata %>% 
+  select(starts_with("desc_crmst")) %>% 
+  print(10)
+  
+#Table showing most prominent categories
+df.crmst_mfd_norm %>% 
+  wrangle_235_table()
+
+# Plotting mentions ========================== # 
+df.crmst_mfd_norm %>% 
+  plot_235() +
+  labs(title = "Q5 Percent mean mentions in MFD dictionary categories")
+```
+
+# MFD across all 5 questions
+
+```{r}
+
+#wrangle q2, q3 qnd q5 ============== #
+q2a <- df.descapp_mfd_norm %>% 
+  wrangle_235_df() %>% 
+  dplyr::rename("mentions_2a" = mentions)
+
+q2b <- df.descapp_mfd_norm %>% 
+  wrangle_235_df() %>% 
+  dplyr::rename("mentions_2b" = mentions)
+
+q3 <- df.descapp_mfd_norm %>% 
+  wrangle_235_df() %>% 
+  dplyr::rename("mentions_3" = mentions)
+
+q5 <- df.descapp_mfd_norm %>% 
+  wrangle_235_df() %>% 
+  dplyr::rename("mentions_5" = mentions)
+
+#wrangle q1 and q2 ============== #
+q1 <- df.desc_1_mfd_all %>%
+  wrangle_14_df() %>% 
+  rename("mentions_1" = mentions)
+
+q4 <- df.emtn_mfd_all %>% 
+  wrangle_14_df() %>% 
+  rename("mentions_4" = mentions)
+
+# Joining ========================== # 
+df.all <- plyr::join_all(list(q1, q2a, q2b, q3, q4, q5), 
+         by='category', 
+         type='left')
+
+df.all %>% 
+  pivot_longer(cols = -category,
+               names_to = "names",
+               values_to = "mentions") %>%
+  separate(names, c("names", "question"), "_") %>% 
+  ggplot(aes(x = category, y = mentions, group = category, fill = category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  coord_flip() +
+  facet_wrap(~ question) +
+  labs(y = "mentions(percent)",
+       title = "Percent mentions of MFD categories across all 5 questions")
+
+```
+

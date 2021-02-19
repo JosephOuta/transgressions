@@ -1,0 +1,283 @@
+---
+title: "LIWC analysis"
+author: "Joseph"
+date: "1/15/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+---
+
+Data Preparation
+
+```{r setup, include=FALSE}
+library(hablar) #you need this for bat ch-converting to numeric
+library(tidyverse)
+library(forcats) #for reordering factors
+
+grudata <- read_csv("data/transdata.csv")
+
+```
+
+Read text analysis files
+
+```{r, include=FALSE}
+#all normalized!
+#q1 
+df.desc1a_norm <- read_csv("post_norm/q1_words/desc_1a_norm.csv")
+df.desc1b_norm <- read_csv("post_norm/q1_words/desc_1b_norm.csv")
+df.desc1c_norm <- read_csv("post_norm/q1_words/desc_1c_norm.csv")
+df.desc1d_norm <- read_csv("post_norm/q1_words/desc_1d_norm.csv")
+df.desc1e_norm <- read_csv("post_norm/q1_words/desc_1e_norm.csv")
+#q2
+df.descapp_norm <- read_csv("post_norm/q2_app/desc_app_norm.csv")
+df.descinapp_norm <- read_csv("post_norm/q2_app/desc_inapp_norm.csv")
+#q3
+df.desc3_norm <- read_csv("post_norm/q3_rsn/desc_rsn_norm.csv")
+#q4
+df.emtn1a_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1a_norm.csv")
+df.emtn1b_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1b_norm.csv")
+df.emtn1c_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1c_norm.csv")
+df.emtn1d_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1d_norm.csv")
+df.emtn1e_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1e_norm.csv")
+#q5
+df.crmst_norm <- read_csv("post_norm/q5_crmst/desc_crmst_norm.csv")
+
+```
+
+
+# Data cleaning
+
+```{r}
+grudata <- grudata %>%
+  slice(-1, -2) %>% #remove first and second row (irrelevant column titles)
+  dplyr::filter(Status==0) %>% #remove survey previews
+  dplyr::filter(Finished==1) %>% #remove unfinished responses
+  retype() #guesses the right data type then auto-converts
+
+names(grudata)
+
+```
+
+# Q1 Analysis
+
+List some (5) words that come to mind when you think of holding a grudge
+
+```{r}
+grudata %>%
+  dplyr::select("desc_wrds_1", "desc_wrds_2", "desc_wrds_3", "desc_wrds_4", "desc_wrds_5") %>% 
+  print(10) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#create wrangling function ======== #
+wrangle_norm_df <- function (df) {
+  df %>% 
+  dplyr::select(-Filename) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "category",
+               values_to = "response") %>%
+  dplyr::filter(!category %in% c("Analytic", "Segment", "Dic", "Clout", "Authentic", "Tone")) %>% 
+  dplyr::filter(response > 2.5) #arbitrary! Recheck
+}
+
+#call the function ============= #
+df.desc1a_norm <- df.desc1a_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_1" = response)
+
+df.desc1b_norm <- df.desc1b_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_2" = response)
+
+df.desc1c_norm <- df.desc1c_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_3" = response)
+
+df.desc1d_norm <- df.desc1d_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_4" = response)
+
+df.desc1e_norm <- df.desc1e_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_5" = response)
+
+# Joining ========================== # 
+df.desc_1_all <- plyr::join_all(list(df.desc1a_norm, df.desc1b_norm, 
+                                     df.desc1c_norm, df.desc1d_norm, df.desc1e_norm), 
+                                by='category', 
+                                type='left') %>% 
+  # filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -category,
+               names_to = "position",
+               values_to = "mentions") 
+
+#Table showing most prominent categories ================# 
+df.desc_1_all %>% 
+  group_by(category) %>% 
+  dplyr::summarize(mean_mentions = mean(mentions)) %>% 
+  dplyr::arrange(desc(mean_mentions)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+# Plotting ========================== # 
+df.desc_1_all %>% 
+  ggplot(aes(x = position, y = mentions, group = category, color = category)) +
+  geom_point() +
+ #  geom_smooth(method = "lm", se = F)
+  labs(x = "nth response",
+       y = "percent mentions",
+       title = "Percent mentions in LIWC dictionary categories")
+
+```
+
+
+# Q2a Analysis
+
+Describe a circumstance where you think its right to hold a grudge
+
+
+```{r}
+#2a
+#Preview data =============#
+grudata %>%
+  select(starts_with("desc_app")) %>% 
+  print(10)
+
+#Table showing most prominent categories
+df.descapp_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("percent" = response) %>% 
+  tibble::as_tibble() %>% 
+  dplyr::arrange(desc(percent)) %>% 
+  rmarkdown::paged_table()
+
+```
+
+# Q2b Analysis
+
+Describe a circumstance where you think its wrong to hold a grudge
+
+```{r}
+#2b
+#Preview data =============#
+grudata %>%
+  select(starts_with("desc_inapp")) %>% 
+  print(10)
+
+#Table showing most prominent categories
+df.descinapp_norm %>% 
+  dplyr::select(-Filename) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "category",
+               values_to = "percent") %>%
+  dplyr::filter(!category %in% c("Analytic", "Segment", "Dic", "Clout", "Authentic", "Tone")) %>% 
+  dplyr::filter(percent > 2.5) %>% #arbitrary! Recheck. Still 26 rows left!!
+  dplyr::arrange(desc(percent)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+
+
+# Q3 Analysis
+
+For what reason do people typically hold grudges? 
+
+```{r}
+#Preview data =============+#
+grudata %>%
+  select(starts_with("desc_rsn")) %>% 
+  print(10)
+
+#Table showing most prominent categories =============+#
+df.desc3_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("percent" = response) %>% 
+  dplyr::arrange(desc(percent)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+
+
+# Q4 Analysis 
+
+List some (5) emotions you think people feel when they hold a grudge
+
+```{r}
+#Preview data =============#
+grudata %>% 
+  select(starts_with("desc_emtn")) %>% 
+  print(10)
+
+#call wrangling function ============= #
+df.emtn1a_norm <- df.emtn1a_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_1" = response)
+
+df.emtn1b_norm <- df.emtn1b_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_2" = response)
+
+df.emtn1c_norm <- df.emtn1c_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_3" = response)
+
+df.emtn1d_norm <- df.emtn1d_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_4" = response)
+
+df.emtn1e_norm <- df.emtn1e_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_5" = response)
+
+# Joining ========================== # 
+df.emtn_all <- plyr::join_all(list(df.emtn1a_norm, df.emtn1b_norm, 
+                                   df.emtn1c_norm, df.emtn1d_norm, df.emtn1e_norm), 
+                              by='category', 
+                              type='left') %>% 
+  # filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -category,
+               names_to = "position",
+               values_to = "mentions") 
+
+#Table showing most prominent categories ======= # 
+df.emtn_all %>% 
+  group_by(category) %>% 
+  dplyr::summarize(mean_mentions = mean(mentions)) %>% 
+  dplyr::arrange(desc(mean_mentions)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+# Plotting ========================== # 
+df.emtn_all %>% 
+  ggplot(aes(x = position, y = mentions, group = category, color = category)) +
+  geom_point() +
+ #  geom_smooth(method = "lm", se = F)
+  labs(x = "nth response",
+       y = "percent mentions",
+       title = "Percent mentions in LIWC dictionary categories")
+
+```
+
+# Q5 Analysis
+
+Describe a circumstance where you have held a grudge (sentences)
+
+```{r}
+#Preview data =============#
+grudata %>% 
+  select(starts_with("desc_crmst")) %>% 
+  print(10)
+  
+#Table showing most prominent categories
+df.crmst_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("percent" = response) %>% 
+  dplyr::arrange(desc(percent)) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+

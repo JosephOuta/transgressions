@@ -1,0 +1,228 @@
+Word	verb	adj	compare	interrog	number	quant	affect	posemo	negemo	anx	anger	sad	social	cogproc	percept	see	hear	feel	drives	power	reward	risk	focuspast	focuspresent	focusfuture	relativ	informal	
+desc																											
+wrds																											
+2					X																						
+fear							X		X	X																	
+na																											
+anger							X		X		X																
+hurt							X		X			X			X			X									
+unforgiven																											
+spiteful							X		X		X																
+toxic																											
+frustration							X		X		X																
+bitter		X					X		X		X				X												
+upsetting		X					X		X	X																	
+boss																			X	X							
+past																							X			X	
+painful							X		X						X			X									
+sad		X					X		X			X															
+disappointment							X		X			X															
+avoiding							X		X	X									X			X					
+upset		X					X		X	X																	
+hard		X													X			X									
+wounded																											
+resentment							X		X		X																
+impulsive																											
+disrespectful																											
+offense							X		X		X																
+passive																			X	X							
+aggressive		X					X		X		X																
+stubborn							X		X		X																
+regret							X		X			X		X													
+betrayal																											
+despise							X		X		X																
+getting	X																		X		X						
+even																											
+revenge							X		X		X																
+injustice																											
+shame							X		X	X									X	X							
+petty		X					X		X		X																
+bad							X		X										X			X					
+roiling																											
+angry		X					X		X		X																
+stupid		X					X		X		X																
+jealousy							X		X		X																
+long																										X	
+term																										X	
+annoyed							X		X		X																
+sadness							X		X			X															
+wasteful																											
+wronged							X		X																		
+over																			X	X						X	
+caring		X					X	X																			
+time																										X	
+tension							X		X	X																	
+frusteration																											
+unfair		X					X		X																		
+hatred							X		X		X																
+pain							X		X						X			X									
+vengeance																											
+problems							X		X					X					X			X					
+envy							X		X		X																
+unforgiveness																											
+mistreatment																											
+cheating							X		X		X								X								
+miscommunication																											
+harsh							X		X						X			X									
+rude		X					X		X		X																
+remorse							X		X			X															
+spite							X		X		X																
+rudeness																											
+bitterness							X		X		X				X												
+unforgiving																											
+feel	X													X	X			X						X			
+hate	X						X		X		X													X			
+for																											
+someone													X	X													
+noncommunicative																											
+fucking		X					X		X		X																X
+lengthy																											
+malicious																											
+grudge							X		X		X		X														
+match																											
+pissed							X		X		X																X
+vengeful																											
+egotistical							X		X																		
+pique																											
+mad							X		X		X																
+close																										X	
+minded																											
+energy							X	X																			
+immature																											
+issues																											
+dull		X					X		X			X															
+vindictive																											
+dramatic																											
+intimidation							X		X		X																
+childish																											
+difficult		X					X		X										X			X					
+mean	X	X												X										X			
+spontaneity																											
+republican																											
+retribution																											
+judgement																			X	X							
+vengence																											
+silent															X		X										
+family													X						X								
+not														X													
+making	X													X													
+good							X	X											X		X						
+gesture																										X	
+of																											
+the																											
+person													X														
+tense							X		X	X																	
+comtempt																											
+coldness																											
+ongoing																											
+melancholy							X		X			X															
+dissapointment																											
+i																											
+don't	X																							X			
+know	X													X										X			
+misunderstanding														X													
+letting																											
+go	X																							X		X	
+made	X													X									X				
+because														X													
+you													X														
+didn't	X													X									X				
+give	X												X											X			
+them													X														
+anything														X													
+resentful							X		X		X																
+grief							X		X			X															
+justified														X													
+emptiness							X		X			X							X							X	
+negative																											
+animosity																											
+prisoner																			X	X							
+dreadful							X		X	X									X			X					
+pride							X	X											X								
+jealosy																											
+ignore	X						X		X															X			
+holding																											
+on																										X	
+ruin							X		X			X															
+festering																											
+guilty		X					X		X	X																	
+passion							X	X																			
+betrayed																											
+behavior																										X	
+argument							X		X		X		X														
+it's	X																							X			
+easy		X					X	X																			
+to																											
+get	X																		X		X			X			
+irritated							X		X	X																	
+with																											
+burden							X		X																		
+beneficial							X	X																			
+disappointed							X		X			X															
+unhealthy																											
+jealous							X		X		X																
+cheat							X		X		X								X								
+waste																											
+allow														X					X	X							
+peach																											
+unforgettable																											
+make	X													X										X			
+up																			X	X						X	
+apology													X						X	X							
+emotion							X																				
+psychology																											
+distrust							X		X		X								X			X					
+ignorance																											
+venom																											
+dishonesty																											
+sometimes														X												X	
+like			X																								
+causing														X													
+a																											
+quarrel																											
+forgive							X	X					X	X													
+really														X													
+displeasure																											
+gall																											
+grievance							X		X			X															
+talk													X											X			
+wise		X					X	X						X					X	X							
+resistent																			X	X							
+rage							X		X		X																
+judgy																											
+back																										X	
+anxiety							X		X	X																	
+guilt							X		X	X																	
+off																										X	
+uncomfortable							X		X	X																	
+focused																											
+weight															X			X									
+wrathful																											
+erratic																											
+selfish							X		X																		
+planning																			X						X		
+deceit																											
+conflict																											
+ignoring	X						X		X																		
+decieved																											
+hostility							X		X		X		X														
+stubborness							X		X		X																
+why				X										X													
+stubbornness							X		X		X																
+protection																			X			X					
+distance																										X	
+humiliating							X		X	X	X								X	X							
+natural		X																									
+emotions							X																				
+unforgiveable																											
+deprival							X		X			X															
+purple															X	X											
+forgiveness							X	X					X	X													
+loathing																											
+worthwhile		X					X	X																			
+punishment							X		X		X								X	X							
+forgiving							X	X					X	X													
+unwilling																											
+emotional		X					X		X																		
+lies							X		X		X																
+stupidity							X		X		X																

@@ -1,0 +1,336 @@
+---
+title: "extra code"
+author: "Joseph"
+date: "1/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+ d[is.na(d)] <- 0
+  
+df %>% 
+  add_column(new_col = NA, .after = "value") %>% 
+  mutate_all(funs(ifelse(is.na(.), 0, .))) %>% 
+  group_by(anger) %>% 
+  mutate(anger = sum(value))
+
+
+#this is summary stats. Instead do the stats for each person
+
+d %>% 
+  group_by() #demographic variable
+  dplyr::select(starts_with("honor")) %>% 
+  mutate(across(.cols = everything(),
+                .fns = list(Composite = mean), na.rm = TRUE,
+                .names = "{col}_{fn}"
+                ))
+  
+  
+  
+
+```
+
+LIWC ANALYSIS PLAN
+
+1. Convert first mentions to txt then feed LIWC then export to csv and back to R
+2. Repeat for 2nd, 3rd, and 4th mentions. 
+
+
+Language processing
+
+```{r}
+#convert to long form
+d_long <- d %>% 
+  dplyr::select(starts_with("desc_wrds")) %>%
+  gather(key, value, na.rm = TRUE) 
+
+#total counts in long form data
+d_long %>% 
+  count(value)
+
+# Accounting for alternative spellings in count
+anger_counts <- c("anger", "Anger", "angee", "Angry", "angry", "ANGRY", "always upset",
+            "annoyance", "Annoyance", "ANNOYANCE", "annoyed", "Annoyed", "annoying") #'anger' string alternatives
+
+d_long_2 <- dplyr::select(d_long, -key)
+
+df <- sapply(d_long_2, function(x) { #counting each occurrence in entire data frame
+  sapply(anger_counts, function(y) {
+    sum(grepl(y, x))
+  })
+}) %>%
+    as.data.frame() 
+
+df2 <- sum(df$value)
+anger < - c("anger")
+data.frame(all_occurences = sum(df$value),
+           word = c("anger"))
+
+
+# NB: you can just use summarize on its own i.e. 
+
+# summarize(height = mean(height, na.rm = T)), and you will get just a single value
+#           n = n())
+
+#create a vector of all words and use as batch input to count function. then output a df with counts of all words and all their alts
+
+#this will take a while
+# or take all values in column 1 (for desc 1 through 5) then convert to one large vector and save as counts. Delete repeated strings Then run sapply through it. 
+
+```
+
+
+# Q1 Absolute Counts LIWC
+
+LIWC software appears to have 2 uses:   
+- Analyze text: Measures % of words in a category/ dimension. I ran this analysis on LIWC but I didn't show it here because it didn't seem all that useful but we can definitely revisit. 
+- Categorize text: indicate which categories words belong to based on pre-defined categories. No ways to custom-make your own categories. This is the technique I used below. The word categories on LIWC are many and quite varied in their meaning. I just selected a subset here, and these can be subsetted further. Will explain more when we meet
+
+List some (5) words that come to mind when you think of holding a grudge
+
+
+```{r}
+# 1 ==================  
+df.desc_1 <- grudata %>% 
+  select(starts_with("desc_wrds_1")) #first select columns
+# write_csv(df.desc_1, "desc_1.csv") #then write to csv                    
+# >Then open and convert to txt > Then categorize on LIWC
+# > Then save LIWC txt output as csv > Then Read the saved csv back to R 
+ 
+# 2 ================== 
+df.desc_2 <- grudata %>% 
+  select(starts_with("desc_wrds_2")) #first select columns
+# write_csv(df.desc_2, "desc_2.csv") #then write to csv
+
+# 3 ================== 
+df.desc_3 <- grudata %>% 
+  select(starts_with("desc_wrds_3")) #first select columns
+# write_csv(df.desc_3, "desc_3.csv") #then write to csv
+
+# 4 ================== 
+df.desc_4 <- grudata %>% 
+  select(starts_with("desc_wrds_4")) #first select columns
+# write_csv(df.desc_4, "desc_4.csv") #then write to csv
+
+# 5 ================== 
+df.desc_5 <- grudata %>% 
+  select(starts_with("desc_wrds_5")) #first select columns
+# write_csv(df.desc_5, "desc_5.csv") #then write to csv
+```
+
+
+```{r}
+## ================================================================== ##
+
+df.desc1_cat <- df.desc1_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_1 = n())
+
+df.desc2_cat <- df.desc2_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_2 = n())
+
+df.desc3_cat <- df.desc3_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_3 = n())
+
+df.desc4_cat <- df.desc4_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_4 = n())
+
+df.desc5_cat <- df.desc5_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_5 = n())
+
+# Joining ========================== # 
+df.desc_all <- join_all(list(df.desc1_cat, df.desc2_cat, df.desc3_cat, df.desc4_cat, df.desc5_cat), 
+         by='LIWC_categories', 
+         type='left')
+
+ # Plotting ========================== # 
+df.desc_all %>% 
+  #filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -LIWC_categories,
+               names_to = "position",
+               values_to = "mentions") %>% 
+  filter(mentions > 20) %>% 
+  ggplot(aes(x = position, y = mentions, group = LIWC_categories, color = LIWC_categories)) +
+  geom_point() +
+ #  geom_smooth(method = "lm", se = F)
+  labs(x = "nth response",
+       y = "total mentions",
+       title = "Graph of total word mentions in selected LIWC categories")
+
+# affect, negative emotion, anger, drives, verb (delete verb)
+  
+```
+
+Q3 ANALYSIS - WHAT REASON DO PEOPLE TYPICALLY HOLD GRUDGES 
+
+```{r}
+
+
+### old ======#
+
+# 
+
+reason <- grudata %>% 
+  select(starts_with("desc_rsn"))
+
+reason_categorized <- reason_categorized %>% 
+  slice(-1, -2) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_1 = n())
+
+ # Plotting ========================== # 
+reason_categorized %>% 
+  #filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -LIWC_categories,
+               names_to = "position",
+               values_to = "mentions") %>% 
+  ggplot(aes(x = position, y = mentions, group = LIWC_categories, color = LIWC_categories)) +
+  geom_point() +
+ #  geom_smooth(method = "lm", se = F)
+  labs(x = "nth response",
+       y = "total mentions",
+       title = "Graph of total word mentions in selected LIWC categories")
+  
+```
+
+
+Q4 OLD/ PREV ANALYSIS (I think this is counts)
+
+```{r}
+
+
+### OLD=================#
+grudata %>% 
+  select(starts_with("desc_emtn")) %>% 
+  print(10)
+
+# 1 ==================  
+df.emtn_1 <- grudata %>% 
+  select(starts_with("desc_emtn_1")) #first select columns
+ write_csv(df.emtn_1, "emtn_1.csv") #then write to csv                    
+# >Then open and convert to txt > Then categorize on LIWC
+# > Then save LIWC txt output as csv > Then Read the saved csv back to R 
+
+# 2 ================== 
+df.emtn_2 <- grudata %>% 
+  select(starts_with("desc_emtn_2")) #first select columns
+# write_csv(df.emtn_2, "emtn_2.csv") #then write to csv
+
+# 3 ================== 
+df.emtn_3 <- grudata %>% 
+  select(starts_with("desc_emtn_3")) #first select columns
+# write_csv(df.emtn_3, "emtn_3.csv") #then write to csv
+
+# 4 ================== 
+df.emtn_4 <- grudata %>% 
+  select(starts_with("desc_emtn_4")) #first select columns
+# write_csv(df.emtn_4, "emtn_4.csv") #then write to csv
+
+# 5 ================== 
+df.emtn_5 <- grudata %>% 
+  select(starts_with("desc_emtn_5")) #first select columns
+# write_csv(df.emtn_5, "emtn_5.csv") #then write to csv
+
+## ================================================================== ##
+
+df.emtn1_cat %>% 
+  print(10) #LIWC output
+
+
+df.emtn1_cat <- df.emtn1_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(n_1 = n())
+
+df.emtn2_cat <- df.emtn2_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% 
+  dplyr::summarize(n_2 = n())
+
+df.emtn3_cat <- df.emtn3_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% 
+  dplyr::summarize(n_3 = n())
+
+df.emtn4_cat <- df.emtn4_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% 
+  dplyr::summarize(n_4 = n())
+
+df.emtn5_cat <- df.emtn5_cat %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  group_by(LIWC_categories) %>% 
+  dplyr::summarize(n_5 = n())
+
+# Joining ========================== # 
+df.emtn_all <- join_all(list(df.emtn1_cat, df.emtn2_cat, df.emtn3_cat, df.emtn4_cat, df.emtn5_cat), 
+         by='LIWC_categories', 
+         type='left')
+
+df.emtn_all %>% 
+  filter(categories %in% c("anger","adj")) %>%  ## ACTIVATE this to subset specific categories
+  pivot_longer(cols = -LIWC_categories,
+               names_to = "position",
+               values_to = "mentions") %>% 
+  ggplot(aes(x = position, y = mentions, group = LIWC_categories, color = LIWC_categories)) +
+  geom_point() +
+ #  geom_smooth(method = "lm", se = F)
+  labs(x = "nth response",
+       y = "total mentions",
+       title = "Graph of total EMOTION word mentions in selected LIWC categories")
+```
+

@@ -1,0 +1,138 @@
+Word	verb	adj	compare	interrog	number	quant	affect	posemo	negemo	anx	anger	sad	social	cogproc	percept	see	hear	feel	drives	power	reward	risk	focuspast	focuspresent	focusfuture	relativ	informal	
+desc																											
+emtn																											
+2					X																						
+grumpiness																											
+na																											
+vindictitive																											
+frustration							X		X		X																
+hate	X						X		X		X													X			
+sadness							X		X			X															
+resentment							X		X		X																
+confused							X		X	X				X													
+fear							X		X	X																	
+anger							X		X		X																
+angry		X					X		X		X																
+disappointment							X		X			X															
+judgement																			X	X							
+hurt							X		X			X			X			X									
+impotence																											
+spite							X		X		X																
+jealousy							X		X		X																
+stubbornness							X		X		X																
+hatred							X		X		X																
+depression							X		X			X															
+apathy							X		X																		
+revenge							X		X		X																
+disappointed							X		X			X															
+stress							X		X	X																	
+bitterness							X		X		X				X												
+inferiority							X		X			X							X	X							
+pettiness																											
+distrustful							X		X		X								X			X					
+annoyed							X		X		X																
+pain							X		X						X			X									
+affected	X													X									X				
+pride							X	X											X								
+confusion														X													
+mad							X		X		X																
+shame							X		X	X									X	X							
+sad		X					X		X			X															
+frustrated							X		X		X																
+disgust							X		X																		
+jealous							X		X		X																
+fearful							X		X	X																	
+annoyance																											
+no																											
+understanding														X													
+of																											
+the																											
+situatiom																											
+lonely							X		X			X															
+upset		X					X		X	X																	
+resenment																											
+embarrassment							X		X	X			X														
+rage							X		X		X																
+resent							X		X		X																
+hostility							X		X		X		X														
+aggression							X		X		X																
+distrusting							X		X		X								X			X					
+resentful							X		X		X																
+worried		X					X		X	X																	
+distrust							X		X		X								X			X					
+superiority							X												X	X							
+betrayal																											
+proud							X	X											X								
+contempt							X		X		X																
+punishment							X		X		X								X	X							
+unjust																											
+suffering	X						X		X			X															
+insecure							X		X	X									X	X							
+pressured							X		X	X																	
+anxiety							X		X	X																	
+malice																											
+dislike	X						X		X															X			
+greed							X		X		X								X	X	X						
+i																											
+don't	X																							X			
+know	X													X										X			
+betrayed																											
+stubborness							X		X		X																
+irritation							X		X	X																	
+bitter		X					X		X		X				X												
+nagging							X		X		X																
+regret							X		X			X		X													
+envy							X		X		X																
+indignation																											
+we													X						X								
+are	X																							X			
+avoiding							X		X	X									X			X					
+them													X														
+spitefulness							X		X		X																
+obsession							X		X	X																	
+discouragement							X		X			X															
+despair							X		X			X															
+disbelief																											
+dissapointment																											
+humiliation							X		X	X	X								X	X							
+ill																											
+will	X																								X		
+emotions							X																				
+mistrust																											
+always														X												X	
+thinking	X													X													
+negative																											
+some						X								X													
+feel	X													X	X			X						X			
+desire							X	X						X					X		X						
+to																											
+settle																											
+up																			X	X						X	
+prideful																											
+loneliness							X		X			X															
+unwilling																											
+take	X																		X		X			X			
+responsibility																											
+become	X													X										X			
+so																											
+when				X																						X	
+fell	X																						X			X	
+wrapped																											
+in																										X	
+wrong		X					X		X										X			X					
+that																											
+you													X														
+can't														X										X			
+enjoy							X	X																			
+present																								X		X	
+strong		X					X	X											X	X							
+exhaustion							X		X																		
+security							X	X											X			X					
+bothered							X		X		X																
+unforgiving																											
+unforgiveness																											
+discomfort							X		X	X																	
+trauma							X		X																		
+guilt							X		X	X																	
+unhappy							X		X			X															
+pained							X		X						X			X									

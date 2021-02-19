@@ -1,0 +1,220 @@
+---
+title: "Status honor and demographics"
+author: "Joseph"
+date: "2/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Preparation
+
+```{r setup, include=FALSE}
+library(hablar) #you need this for bat ch-converting to numeric
+library(tidyverse)
+library(forcats) #for reordering factors
+library(shiny)
+
+grudata <- read_csv("data/transdata.csv")
+
+```
+
+# Data cleaning
+
+```{r}
+grudata <- grudata %>%
+  slice(-1, -2) %>% #remove first and second row (irrelevant column titles)
+  dplyr::filter(Status==0) %>% #remove survey previews
+  dplyr::filter(Finished==1) %>% #remove unfinished responses
+  retype() #guesses the right data type then auto-converts
+
+column1 <- grudata %>% 
+  select(starts_with("desc_wrds_1")) %>% 
+  count()
+
+names(grudata)
+
+```
+
+# Demographic Breakdown
+
+```{r}
+grudata %>% 
+  dplyr::select("demog_yr") %>% 
+  convert(num(demog_yr)) %>% 
+  mutate(age = 2021 - demog_yr) %>% 
+  summarize(mean_age = mean(age, na.rm = T),
+            sd_age = sd(age, na.rm = T))
+
+age <- grudata %>% 
+  dplyr::select("demog_yr") %>% 
+  convert(num(demog_yr)) %>% 
+  mutate(age = 2021 - demog_yr) %>% 
+  drop_na()
+
+range(age$age)
+
+grudata %>% 
+  dplyr::select("demog_sex") %>% 
+  count() %>% 
+  mutate(gender = ifelse(demog_sex == 1, "male",
+                         ifelse(demog_sex == 2, "female", 
+                                ifelse(demog_sex == 3, "other",
+                                       ifelse(demog_sex == 4, "prefer_not", "blank"))))) %>% 
+  relocate(gender, .before = freq) %>% 
+  mutate(prop = round(freq/sum(freq), 2))
+
+
+```
+
+
+# Honor Composite Score
+
+```{r}
+df.honor <- grudata %>% 
+  dplyr::select(ResponseId, starts_with("honor")) %>% 
+  rowwise() %>%  
+  dplyr::mutate(honor_composite = round(mean(c(honor_respect, honor_disres, honor_socialimage, 
+                                  honor_careimplicatio, honor_defendfam, na.rm = T)), 2)) %>% #avg 5 scales
+  dplyr::select(ResponseId, honor_composite)
+
+df.honor %>% 
+  print(10) #see first 10 rows
+
+
+```
+
+# Status Wrangling and Analysis
+
+## Status Ratings
+
+```{r}
+grudata %>% 
+  dplyr::select(ResponseId, starts_with("stat-tar.US")) %>% 
+  print(10)
+
+
+df.status <- grudata %>% 
+  dplyr::select(ResponseId, starts_with("stat")) %>% #select status rating columns
+  drop_na() %>% 
+  pivot_longer(cols = -ResponseId,
+               names_to = c("status2", "rating"),
+               names_sep = "_",
+               values_to = "values",
+               values_transform = list(values = as.character)) %>% #make long
+  convert(num(rating)) %>% 
+  filter(values == "On") %>% 
+  separate(status2, c("variable", "evaluated"), "-") %>% 
+  select(-variable, -values) %>% #deselect variable (list of 'stat') and values (list of 'On')
+  drop_na(rating) %>% 
+  pivot_wider(names_from = "evaluated",
+              values_from = "rating")
+
+df.status %>% 
+  print(10)
+```
+
+## Status Exploratory Analyses
+
+```{r}
+# Show table with group means
+df.status %>% 
+  pivot_longer(cols = -ResponseId,
+               names_to = "evaluatee",
+               values_to = "ratings") %>% 
+  group_by(evaluatee) %>% 
+  dplyr::summarize(mean_rating = mean(ratings, na.rm = T))
+
+#Visualize group means
+df.status %>% 
+  pivot_longer(cols = -ResponseId,
+               names_to = "evaluatee",
+               values_to = "ratings") %>% 
+  dplyr::mutate(across(.cols = "evaluatee",
+                       .fns = ~as.factor(.))) %>% 
+  dplyr::mutate(Evaluatee = fct_relevel(evaluatee, "self.US", "tar.US", "self.comm", "tar.comm")) %>% 
+  select(-evaluatee) %>% 
+  relocate(ratings,  .after = Evaluatee) %>% 
+  separate("Evaluatee", c("object", "region")) %>% #separate columns for easier plotting
+  ggplot(aes(x = object,
+             y = ratings)) +
+  stat_summary(fun.y = "mean",
+               geom = "point") +
+  # stat_summary(fun.data = "mean_cl_boot",   
+  #              geom = "linerange") +
+  facet_wrap(~region) +#NB: after adding C.Intervals, there doesn't seem to be any group differences +
+  labs(title = "Status ratings of self and target in the US and community")
+
+```
+
+## Status vs Honor Values Scale
+
+Results: Not hypothesis-tested yet, but the trend appears to be that individuals with higher honor scores held grudges on targets of a higher status than them, whereas individuals with lower honor scores held grudges on targets of a lower status than themself
+
+```{r}
+df.honstat <- df.status %>% #combine status and honor values
+  left_join(df.honor %>% 
+              select(ResponseId, honor_composite),
+            by = "ResponseId") %>% 
+  drop_na()
+
+#maybe plot honor against difference between target and self evaluations. Get mean target and mean Self
+df.honstat %>% 
+  rowwise() %>% 
+  dplyr::mutate(tar.mean = mean(c(tar.US, tar.comm)),
+                self.mean = mean(c(self.US, self.comm)),
+                diff = tar.mean - self.mean) %>% 
+  ggplot(aes(x = honor_composite,
+             y = diff)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = T) +
+  geom_hline(yintercept = 0, 
+             linetype = 2, 
+             color = "dark grey") +
+  labs(y = "Target - Self status rating",
+       x = "Honor values score")
+
+
+df.honstat %>% 
+  rowwise() %>% 
+  dplyr::mutate(tar.mean = mean(c(tar.US, tar.comm)),
+                self.mean = mean(c(self.US, self.comm)),
+                diff = tar.mean - self.mean) %>% 
+  ggplot(aes(x = honor_composite,
+             y = tar.mean)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = T) +
+  geom_hline(yintercept = 0, 
+             linetype = 2, 
+             color = "dark grey") +
+  labs(y = "Target status rating",
+       x = "Honor values score")
+
+
+df.honstat %>% 
+  rowwise() %>% 
+  dplyr::mutate(tar.mean = mean(c(tar.US, tar.comm)),
+                self.mean = mean(c(self.US, self.comm)),
+                diff = tar.mean - self.mean) %>% 
+  ggplot(aes(x = honor_composite,
+             y = self.mean)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = T) +
+  geom_hline(yintercept = 0, 
+             linetype = 2, 
+             color = "dark grey") +
+  labs(y = "Self status rating",
+       x = "Honor values score")
+
+
+```
+
+## Demographics vs Honor & Status (political orientation, income)
+
+```{r}
+
+
+```
+

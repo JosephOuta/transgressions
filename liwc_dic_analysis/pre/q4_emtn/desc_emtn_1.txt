@@ -1,0 +1,80 @@
+Word	verb	adj	compare	interrog	number	quant	affect	posemo	negemo	anx	anger	sad	social	cogproc	percept	see	hear	feel	drives	power	reward	risk	focuspast	focuspresent	focusfuture	relativ	informal	
+desc																											
+emtn																											
+1					X																						
+poopiness																											
+na																											
+anger							X		X		X																
+angry		X					X		X		X																
+hurt							X		X			X			X			X									
+depressed							X		X			X															
+bitter		X					X		X		X				X												
+resentment							X		X		X																
+mad							X		X		X																
+sadness							X		X			X															
+hate	X						X		X		X													X			
+sad		X					X		X			X															
+rage							X		X		X																
+jealousy							X		X		X																
+frustration							X		X		X																
+jealous							X		X		X																
+self													X														
+doubt							X		X	X				X					X			X					
+resentful							X		X		X																
+minorized																											
+bitterness							X		X		X				X												
+spite							X		X		X																
+lonely							X		X			X															
+hatred							X		X		X																
+upset		X					X		X	X																	
+contempt							X		X		X																
+anxious		X					X		X	X																	
+loathing																											
+separated														X												X	
+revenge							X		X		X																
+saddened																											
+betrayal																											
+annoyance																											
+anxiety							X		X	X																	
+pain							X		X						X			X									
+hostility							X		X		X		X														
+i																											
+don't	X																							X			
+know	X													X										X			
+sorrow							X		X			X															
+passion							X	X																			
+betrayed																											
+lost	X						X		X			X							X				X				
+our													X						X								
+cool		X					X	X							X			X									X
+over																			X	X						X	
+something														X													
+unrelated														X													
+vengefulness																											
+disrespect																											
+embarrasment																											
+vengeance																											
+disappointment							X		X			X															
+fear							X		X	X																	
+always														X												X	
+heartache																											
+some						X								X													
+feel	X													X	X			X						X			
+envy							X		X		X																
+love							X	X					X						X								
+nothing														X													
+ill																											
+will	X																								X		
+when				X																						X	
+fell	X																						X			X	
+and																											
+into																										X	
+every						X								X													
+relationship													X						X								
+righteousness																											
+confusion														X													
+pride							X	X											X								
+righteous																											
+negative																											
+hurtful							X		X			X			X			X									
+disgust							X		X																		

@@ -1,0 +1,264 @@
+Word	verb	adj	compare	interrog	number	quant	affect	posemo	negemo	anx	anger	sad	social	cogproc	percept	see	hear	feel	drives	power	reward	risk	focuspast	focuspresent	focusfuture	relativ	informal	
+desc																											
+wrds																											
+3					X																						
+insult							X		X		X		X														
+na																											
+emotional		X					X		X																		
+resentment							X		X		X																
+scorpio																											
+rejection							X		X			X							X	X							
+feeling	X													X	X			X									
+wronged							X		X																		
+sad		X					X		X			X															
+exhausting							X		X																		
+fighting							X		X		X		X														
+wounded																											
+unattractive		X					X		X																		
+significant																											
+other														X													
+rude		X					X		X		X																
+damaging							X		X																		
+mad							X		X		X																
+disgusted							X		X																		
+dissatisfaction							X		X																		
+ill																											
+communication													X						X								
+revenge							X		X		X																
+self													X														
+defense							X		X										X			X					
+trauma							X		X																		
+resent							X		X		X																
+unforgiving																											
+pettiness																											
+hatred							X		X		X																
+incident																										X	
+stubborn							X		X		X																
+mistake							X		X					X													
+caution																			X			X					
+hurt							X		X			X			X			X									
+tense							X		X	X																	
+rivalry																											
+stupidity							X		X		X																
+anger							X		X		X																
+payback																											
+untrusting																											
+shock							X		X																		
+pain							X		X						X			X									
+jealous							X		X		X																
+argumentative							X		X		X		X														
+upsetting		X					X		X	X																	
+not														X													
+forgiving							X	X					X	X													
+tightened																											
+fists																											
+non																											
+productive														X													
+enmity																											
+negative																											
+betrayed																											
+screwed							X		X		X																X
+mistrust																											
+pouty																											
+petty		X					X		X		X																
+personal		X					X						X														
+harm							X		X																		
+enemy							X		X		X		X														
+sadness							X		X			X															
+fear							X		X	X																	
+time																										X	
+consuming																											
+anxiety							X		X	X																	
+family													X						X								
+hate	X						X		X		X													X			
+unforgiven																											
+immature																											
+bitterness							X		X		X				X												
+loss							X		X			X							X			X					
+opinion														X													
+disrespect																											
+jealousy							X		X		X																
+bitter		X					X		X		X				X												
+guilt							X		X	X																	
+why				X										X													
+feelings														X	X			X									
+awkward							X		X	X			X														
+unforgiveness																											
+lingering																											
+obsession							X		X	X																	
+remembering	X													X									X				
+how				X										X													
+you													X														
+felt	X													X	X			X					X				
+when				X																						X	
+someone													X	X													
+vengeful																											
+irrational							X		X	X																	
+obstacle																											
+die	X																							X			
+waste																											
+of																											
+bad							X		X										X			X					
+violence							X		X																		
+frustration							X		X		X																
+furious							X		X		X																
+angry		X					X		X		X																
+overcritical																											
+confusion														X													
+curse							X		X																		
+longing							X		X			X															
+complicated		X												X													
+burden							X		X																		
+childish																											
+distrust							X		X		X								X			X					
+empty		X					X		X			X							X							X	
+pride							X	X											X								
+upset		X					X		X	X																	
+difficult		X					X		X										X			X					
+blood																											
+fight							X		X		X		X														
+preservation																											
+judgmental																											
+negativity																											
+reserved																											
+getting	X																		X		X						
+even																											
+irrationality							X		X	X																	
+ignorance																											
+right																										X	
+ignore	X						X		X															X			
+friends													X						X								
+hating	X						X		X		X																
+the																											
+person													X														
+immaturity																											
+annoyance																											
+pessimistic							X		X			X							X			X					
+vitriol																											
+vindictiveness																											
+confused							X		X	X				X													
+concieted																											
+focused																											
+justice																			X	X							
+lose	X						X		X			X							X			X		X			
+lewd																											
+reciprocate																											
+i																											
+don't	X																							X			
+know	X													X										X			
+ungodly																											
+trust							X	X					X						X			X		X			
+stubbornness							X		X		X																
+disgust							X		X																		
+suffering	X						X		X			X															
+anticlimatic																											
+dislike	X						X		X															X			
+argue							X		X		X		X														
+annoying		X					X		X		X																
+arrogance							X		X																		
+money																											
+wrong		X					X		X										X			X					
+avoid							X		X	X									X			X					
+comeuppance																											
+venom																											
+break																										X	
+abrasive																											
+disapointment																											
+unforgetful																											
+grumpy																											
+unforgivable																											
+emotion							X																				
+avoiding							X		X	X									X			X					
+spite							X		X		X																
+toxic																											
+short		X																								X	
+sighted															X	X											
+frustrated							X		X		X																
+regret							X		X			X		X													
+spiteful							X		X		X																
+pissed							X		X		X																X
+painful							X		X						X			X									
+disquiet																											
+thing																											
+heated																											
+rancour																											
+hurtful							X		X			X			X			X									
+fixed																											
+justified														X													
+bullheaded																											
+unfair		X					X		X																		
+loneliness							X		X			X															
+stress							X		X	X																	
+goodreads																											
+misuse																											
+power																			X	X							
+always														X												X	
+disloyal																											
+in																										X	
+some						X								X													
+cases																											
+look	X														X	X								X			
+and																											
+hiss																											
+fracture																											
+hard		X													X			X									
+sulking																											
+ridiculous							X		X		X																
+arguments							X		X		X		X														
+avoidance							X		X	X									X			X					
+rancor																											
+a																											
+deep		X																								X	
+living	X																										
+past																							X			X	
+finished	X																						X				
+won't	X																								X		
+unyielding																											
+unhealthy																											
+depression							X		X			X															
+insecure							X		X	X									X	X							
+quiet		X													X		X										
+baggage																											
+hostility							X		X		X		X														
+long																										X	
+lasting																										X	
+despise							X		X		X																
+animosity																											
+conflict																											
+apathy							X		X																		
+owe	X																							X			
+useless							X		X			X							X	X							
+imposter																											
+move	X																							X		X	
+on																										X	
+strain							X		X	X																	
+passive																			X	X							
+agressive																											
+lied	X						X		X		X												X				
+disappointment							X		X			X															
+annoyed							X		X		X																
+problem							X		X					X					X			X					
+obstinate																											
+destroy							X		X		X								X	X							
+conflicted																											
+ego																			X	X							
+boundaries																											
+wrath																											
+will	X																								X		
+cheating							X		X		X								X								
+spontaneous																											
+freedom							X	X																			
+monster																											
+apology													X						X	X							
+let	X																										
+down																			X	X						X	
+liberating																											
+retribution																											
+never														X												X	
+forget	X																							X			
+lacking	X													X					X			X					
+support	X						X	X																X			
+bondage																											
+bully																			X	X							
+cold		X													X			X									
+bigotry																											

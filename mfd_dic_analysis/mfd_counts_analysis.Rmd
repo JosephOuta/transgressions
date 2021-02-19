@@ -1,0 +1,201 @@
+---
+title: "mfd counts analysis"
+author: "Joseph"
+date: "1/15/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+
+#oldnames #actually keep for now cause has counts
+df.desc1_mfd_cat <- read_csv("post_counts/q1_words/desc_1_mfd_cat.csv")
+df.desc1_mfd_anal <- read_csv("post_norm/q1_words/desc_1_mfd_norm.csv")
+
+df.mft_original <- read_csv("mft_dic_orig.csv")
+df.desc1_words <- read_csv("pre/q1_words/desc_1.csv")
+
+#all normalized!
+#q1 
+df.desc1a_mfd_norm <- read_csv("post_norm/q1_words/desc_1a_mfd_norm.csv")
+df.desc1b_mfd_norm <- read_csv("post_norm/q1_words/desc_1b_mfd_norm.csv")
+df.desc1c_mfd_norm <- read_csv("post_norm/q1_words/desc_1c_mfd_norm.csv")
+df.desc1d_mfd_norm <- read_csv("post_norm/q1_words/desc_1d_mfd_norm.csv")
+df.desc1e_mfd_norm <- read_csv("post_norm/q1_words/desc_1e_mfd_norm.csv")
+
+#q2
+df.descapp_mfd_norm <- read_csv("post_norm/q2_app/desc_app_mfd_norm.csv")
+df.descinapp_mfd_norm <- read_csv("post_norm/q2_app/desc_inapp_mfd_norm.csv")
+
+#q3
+df.desc3_mfd_norm <- read_csv("post_norm/q3_rsn/desc_rsn_mfd_norm.csv")
+
+#q4
+df.emtn1a_mfd_norm <- read_csv("post_counts/q4_emtn/desc_emtn_1a_mfd_norm.csv")
+df.emtn1b_mfd_norm <- read_csv("post_counts/q4_emtn/desc_emtn_1b_mfd_norm.csv")
+df.emtn1c_mfd_norm <- read_csv("post_counts/q4_emtn/desc_emtn_1c_mfd_norm.csv")
+df.emtn1d_mfd_norm <- read_csv("post_counts/q4_emtn/desc_emtn_1d_mfd_norm.csv")
+df.emtn1e_mfd_norm <- read_csv("post_counts/q4_emtn/desc_emtn_1e_mfd_norm.csv")
+
+#q5
+df.crmst_mfd_norm <- read_csv("post_counts/q5_crmst/desc_crmst_mfd_norm.csv")
+
+
+```
+
+# Q1 MFD
+
+This analysis used the extended moral foundations dictionary available on: http://github.com/medianeuroscience/emfd/tree/master/dictionaries. I pulled this link from the Hopp et al. (2020) paper you sent me.   
+
+I used LIWC + emfd to analyze words in the first response to "List some (5) words that come to mind when you think of holding a grudge". Below you'll see 2 graphs. The first is for the percent of mentions in each mfd category, and the second is the the number of counts of each word category. So they're basically the same graph, the only difference is the first one is normalized to the total words. My initial plan was to just plot the percent (first graph) but when I did, I noticed the numbers were super low (i.e. the highest value was 4%), so I replotted with just the counts to see how many words were being captured. Turns out the MFD dictionary was only capturing 13 words out of over 400 words in our list. I looked through the dictionary words themselves to ensure its not an error. It wasn't an error. Many of our words were just not in the mfd dictionary. For example, the word "anger", which is our most common word, was nonexistent in the MFD. Which is what made me suggest we use our own custom dictionary, or perhaps a hybrid of other dictionaries as you suggested. A caveat is this is only for the question 1, and perhaps the other questions would capture more moral-foundation-esque words. I will run this analysis for the questions then let you know. 
+
+## Which words did mfd pick up?
+
+In the first response of q1
+
+At the end of this code chunk I've paginated the data in a table, so you can browse all of its rows and columns. There are 27 rows in total and many are repeat rows.
+
+```{r, warning = FALSE}
+df.desc1_mfd_cat %>% 
+  slice(-1) %>% 
+  dplyr::rename(Word = "Source (A)") %>% 
+  select(-WC, -Dic) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>%                                                       
+  separate(LIWC_categories, c("Number", "Category"), "                    ") %>% #Spacing = 10 tabs!!
+  dplyr::select(-Number) %>% 
+  drop_na() %>% 
+  filter(check != 0) %>% 
+  select(-check) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+
+```
+
+## Graph 1:
+
+Percent of words in each mfd category
+
+```{r, warning = FALSE}
+# Normalized using Analyze Text =================== #
+df.desc1_mfd_anal <- df.desc1_mfd_anal %>% 
+  slice(-1) %>% 
+  dplyr::rename(Word = "Source (A)") %>% 
+  select(-WC, -Dic) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>%                                                       
+  separate(LIWC_categories, c("Number", "Category"), "                    ") %>% #Spacing = 10 tabs!!
+  dplyr::select(-Number) %>% 
+  drop_na() %>% 
+  group_by(Category) %>% 
+  dplyr::summarize(mean = mean(check)) %>% 
+  slice(1:11)
+
+df.desc1_mfd_anal %>% 
+  ggplot(aes(x = Category, y = mean, color = Category)) +
+  geom_point() +
+  labs(y = "Mean mentions (%)")
+```
+
+
+## Graph 2:
+
+Count of words in each category.
+
+You will notice that this plot has only 5 categories (vs 11 in the previous one). That's because the script I wrote dropped all NAs aka columns with 0 word mentions.   
+
+I've also paginated the table that shows the counts of words. The count column adds up to 13. So the dictionary only captured 13 out of the over 400 words we fed it.   
+
+```{r}
+# Count Breakdown ================================= #
+df.desc1_mfd_cat <- df.desc1_mfd_cat %>% 
+  slice(-1, -2) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  separate(LIWC_categories, c("Number", "Category"), "                    ") %>% #Spacing = 10 tabs!!
+  dplyr::select(-Number) %>% 
+  drop_na() %>% 
+  group_by(Category) %>% #at this point we're more interested in categories than the words
+  dplyr::summarize(mentions = n()) 
+
+df.desc1_mfd_cat %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.desc1_mfd_cat %>% 
+  ggplot(aes(x = Category, y = mentions, color = Category)) + 
+  geom_point() +
+  labs(y = "Absolute mentions") 
+
+```
+
+## Our data vs mfd
+
+I uploaded the moral foundations dictionary here just so you could see a side-by-side of what types of words it has. Many of the words have similar themes with the ones in our data, it's just that our words aren't an exact match to the dictionary words. So, for example, the mfd has variations of "offend" but it doesn't have the word "anger" and our list is the opposite; we have the latter but we don't have the former. 
+
+```{r, warning = FALSE}
+df.mft_original <- df.mft_original %>%
+  slice(14:346) %>% 
+  dplyr::rename(Words = "%") %>% 
+  separate(Words, c("MFT_Words", "Symbols", "*")) %>% 
+  dplyr::select(-Symbols, -"*")
+
+df.desc1_words <- df.desc1_words %>% 
+  dplyr::rename(Our_RawData = "Source (A)") %>% 
+  select(Our_RawData) %>% 
+  slice(-1) %>% 
+  drop_na() %>% 
+  slice(1:333) #top 33 rows
+
+df.joined <- cbind(df.mft_original, df.desc1_words)
+
+df.joined %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+
+## Q2 MFD
+
+(a) Describe a circumstance where you think its right to hold a grudge
+(b) Describe a circumstance where you think its wrong to hold a grudge
+
+```{r}
+
+```
+
+# Q3 MFD
+
+For what reason do people typically hold grudges? 
+
+```{r}
+
+```
+
+# Q4 MFD
+
+List some (5) emotions you think people feel when they hold a grudge
+
+```{r}
+
+```
+
+# Q5 MFD
+
+Describe a circumstance where you have held a grudge 
+
+```{r}
+
+```
+
