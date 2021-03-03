@@ -1,0 +1,162 @@
+---
+title: "liwc_analysis_post"
+author: "Joseph"
+date: "2/23/2021"
+output: html_document
+---
+
+Objective: To open up the blackbox of social, affective and cognitive categories that were flagged in analysis 1. We saw the % breakdown of words by category, now we are going to see what specific words were flagged in ecah category. 
+
+```{r setup, include=FALSE}
+library(hablar) #you need this for bat ch-converting to numeric
+library(tidyverse)
+library(forcats) #for reordering factors
+
+grudata <- read_csv("data/transdata.csv")
+
+```
+
+Read text analysis files
+
+```{r, include=FALSE}
+#all normalized!
+#q1 
+df.desc1a_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+df.desc1b_counts <- read_csv("post_analysis_counts/q1_words/desc_1b_counts.csv")
+df.desc1c_counts <- read_csv("post_analysis_counts/q1_words/desc_1c_counts.csv")
+df.desc1d_counts <- read_csv("post_analysis_counts/q1_words/desc_1d_counts.csv")
+df.desc1e_counts <- read_csv("post_analysis_counts/q1_words/desc_1e_counts.csv")
+
+```
+
+# Data cleaning
+
+```{r}
+grudata <- grudata %>%
+  slice(-1, -2) %>% #remove first and second row (irrelevant column titles)
+  dplyr::filter(Status==0) %>% #remove survey previews
+  dplyr::filter(Finished==1) %>% #remove unfinished responses
+  retype() #guesses the right data type then auto-converts
+
+```
+
+# Define functions
+
+Create functions to avoid code repetition
+
+```{r}
+  
+wrangle_counts_df <- function (df) {
+  df %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "check") %>% 
+  drop_na() %>% 
+  relocate(Word, .after = LIWC_categories) %>% 
+  arrange(LIWC_categories)
+}
+
+
+```
+
+# Q1 Analysis
+
+List some (5) words that come to mind when you think of holding a grudge
+
+This prompt would return associated concepts. Some could be specifically about grudges, but some could also be concepts that are different but closely related. I suppose this is a way to map out the coceptual distance with other concepts. 
+
+```{r}
+#wrangling
+grudata %>%
+  dplyr::select("desc_wrds_1", "desc_wrds_2", "desc_wrds_3", "desc_wrds_4", "desc_wrds_5") %>% 
+  print(10) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.desc1a_counts <- df.desc1a_counts %>% 
+  wrangle_counts_df()
+
+```
+
+## Affect
+
+The positive dimensions are forgiveness (2), fairness (1), inspiration (1). Pride here means self-importance which is a negative trait
+
+```{r}
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "affect")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "posemo")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "negemo") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "anx")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "anger") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "sad")
+
+```
+
+## Social
+
+```{r}
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "social")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "family")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "friends")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "female")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "male")
+
+
+```
+
+
+## Cognitive Processes
+
+```{r}
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "cogproc")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "insight")
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "cause") #Causal
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "discrep") #Discrepancies
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "tentat") #Tentative
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "certain") #Certainty
+
+df.desc1a_counts %>% 
+  filter(LIWC_categories == "differ") #Differentiation
+
+```
+
+
+

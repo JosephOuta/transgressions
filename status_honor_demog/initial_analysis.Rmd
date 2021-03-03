@@ -2,12 +2,12 @@
 title: "Status honor and demographics"
 author: "Joseph"
 date: "2/10/2021"
-output: html_document
+output:
+    html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # Data Preparation
 
@@ -58,15 +58,17 @@ range(age$age)
 
 grudata %>% 
   dplyr::select("demog_sex") %>% 
-  count() %>% 
-  mutate(gender = ifelse(demog_sex == 1, "male",
+  count()
+
+grudata %>% 
+  dplyr::mutate(gender = ifelse(demog_sex == 1, "male",
                          ifelse(demog_sex == 2, "female", 
                                 ifelse(demog_sex == 3, "other",
                                        ifelse(demog_sex == 4, "prefer_not", "blank"))))) %>% 
   relocate(gender, .before = freq) %>% 
   mutate(prop = round(freq/sum(freq), 2))
 
-
+names(grudata)
 ```
 
 

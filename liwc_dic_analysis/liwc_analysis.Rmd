@@ -9,6 +9,8 @@ output:
     toc_depth: 2
 ---
 
+NB: THIS ANALYSIS WILL ONLY DETECT SOCIAL, AFFECTIVE AND COGNITIVE CATEGORIES. REDO THE ANALYSIS WITH ALL CATEGORIES, NOW THAT I KNOW
+
 Data Preparation
 
 ```{r setup, include=FALSE}
@@ -25,24 +27,24 @@ Read text analysis files
 ```{r, include=FALSE}
 #all normalized!
 #q1 
-df.desc1a_norm <- read_csv("post_norm/q1_words/desc_1a_norm.csv")
-df.desc1b_norm <- read_csv("post_norm/q1_words/desc_1b_norm.csv")
-df.desc1c_norm <- read_csv("post_norm/q1_words/desc_1c_norm.csv")
-df.desc1d_norm <- read_csv("post_norm/q1_words/desc_1d_norm.csv")
-df.desc1e_norm <- read_csv("post_norm/q1_words/desc_1e_norm.csv")
+df.desc1a_norm <- read_csv("post_analysis_norm/q1_words/desc_1a_norm.csv")
+df.desc1b_norm <- read_csv("post_analysis_norm/q1_words/desc_1b_norm.csv")
+df.desc1c_norm <- read_csv("post_analysis_norm/q1_words/desc_1c_norm.csv")
+df.desc1d_norm <- read_csv("post_analysis_norm/q1_words/desc_1d_norm.csv")
+df.desc1e_norm <- read_csv("post_analysis_norm/q1_words/desc_1e_norm.csv")
 #q2
-df.descapp_norm <- read_csv("post_norm/q2_app/desc_app_norm.csv")
-df.descinapp_norm <- read_csv("post_norm/q2_app/desc_inapp_norm.csv")
+df.descapp_norm <- read_csv("post_analysis_norm/q2_app/desc_app_norm.csv")
+df.descinapp_norm <- read_csv("post_analysis_norm/q2_app/desc_inapp_norm.csv")
 #q3
-df.desc3_norm <- read_csv("post_norm/q3_rsn/desc_rsn_norm.csv")
+df.desc3_norm <- read_csv("post_analysis_norm/q3_rsn/desc_rsn_norm.csv")
 #q4
-df.emtn1a_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1a_norm.csv")
-df.emtn1b_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1b_norm.csv")
-df.emtn1c_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1c_norm.csv")
-df.emtn1d_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1d_norm.csv")
-df.emtn1e_norm <- read_csv("post_norm/q4_emtn/desc_emtn_1e_norm.csv")
+df.emtn1a_norm <- read_csv("post_analysis_norm/q4_emtn/desc_emtn_1a_norm.csv")
+df.emtn1b_norm <- read_csv("post_analysis_norm/q4_emtn/desc_emtn_1b_norm.csv")
+df.emtn1c_norm <- read_csv("post_analysis_norm/q4_emtn/desc_emtn_1c_norm.csv")
+df.emtn1d_norm <- read_csv("post_analysis_norm/q4_emtn/desc_emtn_1d_norm.csv")
+df.emtn1e_norm <- read_csv("post_analysis_norm/q4_emtn/desc_emtn_1e_norm.csv")
 #q5
-df.crmst_norm <- read_csv("post_norm/q5_crmst/desc_crmst_norm.csv")
+df.crmst_norm <- read_csv("post_analysis_norm/q5_crmst/desc_crmst_norm.csv")
 
 ```
 

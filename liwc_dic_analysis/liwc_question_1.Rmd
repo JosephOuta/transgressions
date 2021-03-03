@@ -1,0 +1,963 @@
+---
+title: "Question_1"
+author: "Joseph"
+date: "2/25/2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+---
+
+# Data Preparation
+
+```{r setup, include=FALSE}
+library(hablar) #you need this for bat ch-converting to numeric
+library(tidyverse)
+library(forcats) #for reordering factors
+
+grudata <- read_csv("data/transdata.csv")
+#q1 normalized
+df.desc1a_norm <- read_csv("post_analysis_norm/q1_words/desc_1a_norm.csv") 
+df.desc1b_norm <- read_csv("post_analysis_norm/q1_words/desc_1b_norm.csv") 
+df.desc1c_norm <- read_csv("post_analysis_norm/q1_words/desc_1c_norm.csv") 
+df.desc1d_norm <- read_csv("post_analysis_norm/q1_words/desc_1d_norm.csv") 
+df.desc1e_norm <- read_csv("post_analysis_norm/q1_words/desc_1e_norm.csv") 
+#all q1 normalized
+df.q1all_norm <- read_csv("post_analysis_norm/q1_words/desc_1all_norm.csv")
+
+#q1 counts
+df.desc1a_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+df.desc1b_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+df.desc1c_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+df.desc1d_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+df.desc1e_counts <- read_csv("post_analysis_counts/q1_words/desc_1a_counts.csv")
+#all q1 counts
+df.q1all_counts <- read_csv("post_analysis_counts/q1_words/desc_1all_counts.csv")
+#anger
+anger <- read_csv("data/anger.csv")
+
+```
+
+Previewing the responses
+
+```{r, echo=FALSE}
+grudata <- grudata %>%
+  slice(-1, -2) %>% #remove first and second row (irrelevant column titles)
+  dplyr::filter(Status==0) %>% #remove survey previews
+  dplyr::filter(Finished==1) %>% #remove unfinished responses
+  retype() #guesses the right data type then auto-converts
+
+#preview data ======== #
+grudata %>%
+  dplyr::select("desc_wrds_1", "desc_wrds_2", "desc_wrds_3", "desc_wrds_4", "desc_wrds_5") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+Setting up functions for the analysis
+
+```{r}
+wrangle_all_norm_df <- function (df) {
+  df %>% 
+  dplyr::select(-Filename) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "category",
+               values_to = "response") %>% 
+  drop_na() %>% 
+  dplyr::filter(!category %in% c("WPS", "Sixltr", "Clout", "Authentic")) %>% 
+  dplyr::rename("percent" = response) %>% 
+  arrange(desc(percent)) 
+  #dplyr::filter(response > 2.5) #arbitrary! Recheck
+}
+
+wrangle_counts_df <- function (df) {
+  df %>% 
+  slice(-1, -2, -3) %>% 
+  pivot_longer(cols = -Word,
+               names_to = "LIWC_categories",
+               values_to = "present") %>% 
+  drop_na() %>% 
+  relocate(Word, .after = LIWC_categories) %>% 
+  #dplyr::filter(!LIWC_categories %in% c("function")) %>% 
+  arrange(LIWC_categories)
+}
+
+```
+
+# About this analysis
+
+- There are two analyses for each word category; one to reveal percent of words in the category, and a second to reveal the specific words flagged in a category.   
+- I have noticed something curious: The percent of words in a category don't necessarily correspond to the count of words in the category -- why? Perhaps the dictionary that analyzes words is not the same as the one that categorizes words, such that that LIWC flags a slightly different set of words when categorizing from the ones it flags when analyzing percentages.   
+- Many of these categories overlap with each other i.e. affect words and percept words that fall under the feel subcategory are largely similar.
+- All of these words have subcategories, however all the subcategories don't capture all the words in the category i.e. the "social" category many have "family" and "friends" as subcategories, but it may also flag words like "person", which it won't put into either or any of the existing subcategories.  
+- In some cases, the words being flagged *felt* irrelevant to the category they were labelled as belonging to.   
+
+That said, here is a breakdown of the words in the top categories. I will first show the % of words in each category, then I will open up the hood to see the actual words being flagged.
+
+# The analysis
+
+## 0: Summary stats
+LIWC captures 2207 words and 81% of the words in Question 1. 
+
+```{r, echo = FALSE}
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% c("Dic", "WC")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 1: Affect (59%) or 240
+
+Affect was the top category (59%). 
+
+```{r, echo = FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "affect") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("affect")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+
+
+Affect constitutes 2 subcategories - positive emotion (2.45%) and negative emotion (56.2%).
+
+```{r, echo=FALSE}
+#subcategories 1 =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "posemo") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("posemo")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "negemo") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("negemo")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+
+Lets take a look at negative emotion words. It has 3 sub-subcategories - anger, anxiety, and sadness
+
+```{r, echo=FALSE}
+#subcategories 2 =======#
+
+#Negemo #=========#
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% c("anger")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("anger")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% c("anx")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("anx")) %>%  #Silent words: lack of communication/contact with the transgressor.   
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% c("sad")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("sad")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+### Anger
+
+Anger is the most represented emotion sub-subcategory 
+
+```{r, echo = FALSE}
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("anger")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+### Anger decomposition
+
+The anger words are many and diverse. So I saved and exported them to a csv file, and manually categorized them into 3 sensible subdivisions based on a CBT-inspired perspective:   
+
+- what have you experienced (efficient cause) - hurt, etc  
+- how did you react or appraise what you experienced (appraise) - felt rage, etc.   
+- what is the function or end goal of your reaction? (final causal) - to get retribution, to get justice...etc.   
+
+Since respondents were only providing single words, its hard to specify whether the words refer to their own actions or the transgressor's actions. So, under my subdivisions, the words for "efficient cause" and "final cause" will overlap a lot. At the very least we could combine our 3 subdivisions into 2 major categories: efficient and final refers to *actions* and appraisal refers to *emotions*. Actions here refers to what the transgressor did, or what the victim desires to do in response to the transgression, and emotions here refers to what the victim felt about the transgression/ how they reacted.   
+It is also worth noting, in many cases, that the emotional reaction to the transgression implies what the transgressor did. For example, participants who wrote "rage" could mean that they themselves felt rage or that the transgressor *did* something vexing; someone who wrote "contempt" could mean they felt contempt towards the transgressor, or that the transgressor *acted* contemptuously towards them.   
+I also created a fourth separate category with just resentment-related words, just cause.  
+
+Preview the new data frame of anger words:
+
+```{r, echo = FALSE}
+anger %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+
+Now lets look at the anger words in the 4 subdivisions. NB: For the resentment words below, I did not include words like rage or frustration. 
+
+```{r, echo=FALSE}
+
+#what they did
+anger %>% 
+  select(Word, Efficient) %>% 
+  rename("they_did" = Word) %>% 
+  drop_na() %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#what you feel about what they did
+anger %>% 
+  select(Word, Appraisal) %>% 
+  rename("you_felt" = Word) %>% 
+  drop_na() %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#what you will do
+anger %>% 
+  select(Word, Final) %>% 
+  drop_na() %>% 
+  rename("you_will_do" = Word) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#resentment words (does not include words like rage or frustration)
+anger %>% 
+  select(Word, Resent) %>% 
+  drop_na() %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 2: Percept (8.1%) or 27
+
+Below are words in the perceptual processes category. 
+
+```{r, echo = FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "percept") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("percept")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+Perceptual processes break down into 3 subcategories - see, hear and feel words
+
+```{r, echo=FALSE}
+
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "see") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("see")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "hear") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("hear")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "feel") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("feel")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 3: Function (7.8%) or 51
+
+These are meaningless for the purposes of this word-based analysis. Function words seen here are from participants who responded with sentences rather than single words. Example words flagged were: to, nothing, I, don't, a, when, we, about, them, someone, nothing...etc. Some examples of full sentences are "When we think about them, i feelings are negative." which is simply negative affect, or "Two wrongs don't make a right" which is a commentary on the futility of retaliation in favor of a forgiveness paradigm, or "I feel like to settle issues even when i'm the one on the right." which touches on a cognitive aspect, namely the perception that the victim has an undue one-sided burden for resolving the conflict. 
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "function") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("function")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 4: Drives (7.7%) or 88
+
+There are 5 drives explored in this data - achievement, affiliation, power, reward and risk. First lets look at all "drives" words
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "drives") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table() 
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("drives")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+Then lets look at the 5 drive subcategories
+
+```{r, echo=FALSE}
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "achieve") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("achieve")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "affiliation") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("affiliation")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "power") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("power")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "reward") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("reward")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "risk") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("risk")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 5: Cognitive processes (4.6%) or 69
+
+All the words indicating cognitive processes
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "cogproc") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("cogproc")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+There are 6 cognitive process subcategories - insight, causal, discrepancies, tentative, certainty differentiation:
+
+```{r, echo=FALSE}
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "insight") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("insight")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "cause") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("cause")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "discrep") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("discrep")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "tentat") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("tentat")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "certain") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("certain")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "differ") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("differ")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 6: Social (5%) or 40
+
+Social words: 
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "social") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("social")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+There are 6 cognitive process subcategories - insight, causal, discrepancies, tentative, certainty differentiation:
+
+```{r, echo=FALSE}
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "family") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("family")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "friend") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("friend")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "female") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("female")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "male") %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("male")) %>% 
+    tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 7: Time orientation (~%). 
+
+Another category is temporal orientation. For some reason the dictionary didn't show any words under the umbrella category "time orientation" but it did show words in its three subcategories which will we shall explore later below. 
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "timeorient") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("timeorient")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+
+The three time orientation subcategories are - present focus, past focus, and future focus:
+
+```{r, echo=FALSE}
+#subcategories =======#s
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "focuspast") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("focuspast")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "focuspresent") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("focuspresent")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "focusfuture") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("focusfuture")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 8: Biological Processes (4.7%) or 32
+
+Here are the words categorized as "biological processes"
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "bio") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("bio")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+The dictionary explores 4 biological process subcategories - body, health, sexual and ingest.
+
+```{r, echo=FALSE}
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "body") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("body")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "health") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("health")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "sexual") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("sexual")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "ingest") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("ingest")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 9: Relativity (4.5%) or 47
+
+All the relativity words:
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "relativ") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("relativ")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+Relativity has 3 subcategories - motion, space, and time:
+
+```{r, echo=FALSE}
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "motion") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("motion")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "space") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("space")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "time") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("time")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+## 10: Informal (0.77%) or 8
+
+The following are informal words:
+
+```{r, echo=FALSE}
+#main =======#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "informal") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("informal")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+```
+
+These are divided into 5 subcategories - swear, netspeak, assent, non-fluencies, filler words 
+
+
+```{r, echo=FALSE}
+
+#subcategories =======#
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "swear") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("swear")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "netspeak") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("netspeak")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "assent") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("assent")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "nonflu") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("nonflu")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+#=========#
+df.q1all_norm %>% 
+  wrangle_all_norm_df() %>% 
+  filter(category %in% "filler") %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+df.q1all_counts %>% 
+  wrangle_counts_df() %>% 
+  filter(LIWC_categories %in% c("filler")) %>% 
+  tibble::as_tibble() %>% 
+  rmarkdown::paged_table()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

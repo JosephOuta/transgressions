@@ -334,3 +334,48 @@ df.emtn_all %>%
        title = "Graph of total EMOTION word mentions in selected LIWC categories")
 ```
 
+
+Analyzing individual responses
+
+# Q1a (response 1)
+
+```{r}
+
+#wrangle 1a then preview ============= #
+df.desc1a_norm %>% 
+  wrangle_norm_df() %>% 
+  dplyr::rename("response_1" = response) %>% 
+  arrange(desc(response_1))
+
+df.desc1a_counts %>% 
+  wrangle_counts_df() 
+  #filter(LIWC_categories %in% c("family", "friend", "female", "male"))
+
+```
+
+(this belongs here, don't delete)
+LIWC captures ~89% of the words in Question 1a. Note that many of these categories will overlap with each other. Note also that all of these words have subcategories, however all the subcategories don't capture all the words in the category i.e. the "social" category many have "family" and "friends" as subcategories, but it may also flag words like "person", which it won't put into each subcategory. Nevertheless, here is a breakdown of the words in the top categories. I first showed the % of words in each category, then I opened up the hood to see the actual words being flagged. In some cases, the words being flagged were irrelevant to the category they were described as belonging to. 
+
+The top category is affect (70%), 69.9% of which was negative emotion (elaborated below), and 1.5% positive emotion words (pride, forgiveness, forgive, inspirational, fair). Negative emotion words were broken into 3 categories, 56.7% of all detected words were anger (elaborated below), followed by 4.6% sad words (hurt, sad, sadness, regret, lost, losing, longing, hurtful), and finally 2.6% anxiety words (shame, stressful, irritability, upset, scared, stress, irrational, nervous, irritated).  
+  There were 32 anger words. Lets break it down ==========
+
+Top categories outside emotions are:
+Function words (7.5%): Are meaningless here. They are from the people who responded with sentences rather than single words. Example words flagged were: to, nothing, I, don't, a, when, we, about, them, someone, nothing...etc. About 4 people wrote full sentences such as "When we think about them, i feelings are negative." which is simply negative affect, or "Two wrongs don't make a right" which is a commentary on the futility of retaliation in favor of a forgiveness paradigm, or "I feel like to settle issues even when i'm the one on the right." which touches on a cognitive aspect, namely the perception that the victim has an undue one-sided burden for resolving the conflict         
+
+Percept words (7.2%): Represents 3 perceptual process subcategories - see, hear and feel. The "hear" sub-category captured two words (silent and silent). This could be referring to a lack of communication or contact with the transgressor. The only other represented sub-category was feel, and the flagged words were emotion words also captured in the affect category (pain, cold, hurt, bitterness, feelings).     
+
+Drives (4.8%): This had 5 subcategories. 3 achieve words (pride, lost, losing), 3 affiliation words (family, friends, we), 9 power words (judgment, shame, justice, punishment, small, destroy, apology, victim, weak, apologize), 1 reward (get), 3 risk (wrong, troublesome, losing)   
+
+Time orientation (~5%). This has 3 subcategories, present focus, past focus, and future focus. Largest proportion of flagged words were in Present focus (4.8%, total 13 words). The words were: ignore, hate, mean, don't, know, make, think, are, present, feel, I'm, move, get. Many of these are function words or time-neutral, so really the only relevant word here is "present". Revise this down to 1 word. The focus past category (1.1%, 4 words), on the other hand, captured stuck, decided, past, lost. 
+
+Cognitive processes (4.6%): Of the 6 cognitive process categories, 5 were detected. They were 3 cause words (why, make, intention), 2 certainty (nothing, never), 3 discrepancies (wanting, regret), 1 tentative (someone), 9 insight (decided, mean, know, forgiveness, think, feelings, forgive, inspirational, feel, someone)   
+
+Relativity (4.19%): Relativity had 3 subcategories, 1 motion word (move), 7 space words (stuck, long, small, right, point, on, off), 6 time words (time, history, when, past, present, never)
+
+Biological processes (3.7%): BP has 4 subcategories, body health sexual ingest. Flagged words were 2 from body (pissed, stomach), 9 health words (painful, poison, exhausting, unhealthy, tired, weak, tiring, ulcers), and 1 ingest word (drinking).   
+
+Social (3.3%): Social has 4 subcategories namely family, friend, female and male. 1 word from family was captured(family), and 1 word from friend was captured (friends). The rest of the words were miscellaneous social cagetories or themes: exes, someone, person, forgiveness, fight, we, them, forgive, apology, apologize.
+
+The rest were subcategories of function words such as prepositions, adverbs etc. 
+```
+
